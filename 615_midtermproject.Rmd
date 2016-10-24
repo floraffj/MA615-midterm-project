@@ -15,7 +15,7 @@ library(ggplot2)
 
 # Project Introduction
 
-Github: 
+Github: https://github.com/floraffj/MA615-midterm-project
 
 I consulted with Zhouyi Zhao when I work on this project. 
 
