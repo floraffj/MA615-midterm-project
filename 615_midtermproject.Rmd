@@ -15,7 +15,9 @@ library(ggplot2)
 
 # Project Introduction
 
-Github: https://github.com/floraffj/MA615-midterm-project
+Github: https://github.com/floraffj/MA615-midterm-project \
+Raw data: http://www.ers.usda.gov/webdocs/DataFiles/International_Food_Security__17990/gfa27.csv
+
 
 I consulted with Zhouyi Zhao when I work on this project. 
 
