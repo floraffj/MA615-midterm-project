@@ -69,7 +69,7 @@ IFS_tidy <- IFS_raw %>% subset(Commodity=="Population",select=c("Country","Year"
 colnames(IFS_tidy)[3] <- "Population"
 ```
 
-Firstly we find the combinations of different country and different year, which should be $76*25=1900$ observation. And then we select the variable "population" from raw data and matched it with the combination of country and year.
+Firstly we found every combination of country and year, which should be $76*25=1900$ observations. And then we selected the variable "population" from raw data and matched it with the combination of country and year.
 
 ```{r}
 #
@@ -80,7 +80,7 @@ tidyIFS <- function(x,y){
 }
 ```
 
-In order to avoid being verbose, we defined a function to select the data we need and to join them together to become a new data frame.
+In order to avoid being verbose, we defined a function to select the data we need and to join them together to become a new data frame. First, we made subset by using logical expression indicating the elements in the catagory of "x" and "y". Then we made the subset join to the tidied dataset by "Country" and "Year". By using the code "full_join", we kept all the information including missing value.
 
 ```{r}
 IFS_tidy <- tidyIFS("Economic Data","Imports of goods and services (constant 2005 US$)")
@@ -101,56 +101,28 @@ names(IFS_tidy) <- c("Country","Year","cereals_production","cereals_ava","cereal
 
 ## Trend of cereals production during 25-year period
 
-### The cereals production of Eypgt 
+This part we used line charts to illustrate the changes of cereals production from 1990 to 2014 in 76 countries. 
+
+### Cereals Production in different country
 
 ```{r,fig.align='center'}
-library(ggvis)
-#Egypt
-IFS_tidy %>%
-  ggvis(~Year,~cereals_production) %>%
-  filter(Country=="Egypt") %>% 
-  layer_lines() %>% 
-  add_axis("y",title="Cereals Production") %>% 
-  add_axis("x", title = "Year") %>% 
-  add_axis("x", orient = "top", ticks = 0, title ="Cereals Production of Egypt")
+subset(IFS_tidy, Country=="Egypt"| Country== "Vietnam" | Country == "Somalia") %>% 
+  ggplot() + 
+  aes(x=Year, y=cereals_production, col=Country)+ 
+  geom_line() +
+  ggtitle("Cereals Production in Egypt, Vietnam & Somalia") +
+  ylab("Cereals Production")
 ```
 
-A significant increasing trend can be seen from the graph above, which indicates the increase in the cereals production in Egypt throughout the period. Similar trend can be observated in Vietnam.
-
-```{r,fig.align='center'}
-#Vietnam
-IFS_tidy %>%
-  ggvis(~Year,~cereals_production) %>%
-  filter(Country=="Vietnam") %>% 
-  layer_lines() %>% 
-  add_axis("y",title="Cereals Production") %>% 
-  add_axis("x", title = "Year") %>% 
-  add_axis("x", orient = "top", ticks = 0, title ="Cereals Production of Vietnam")
-
-```
-
-However, the cereals production had an opposite trend in Somalia.
-
-```{r,fig.align='center'}
-#Somalia
-IFS_tidy %>%
-  ggvis(~Year,~cereals_production) %>%
-  filter(Country=="Somalia") %>% 
-  layer_lines() %>% 
-  add_axis("y",title="Cereals Production") %>% 
-  add_axis("x", title = "Year") %>% 
-  add_axis("x", orient = "top", ticks = 0, title ="Cereals Production of Somilia")
-
-```
-
+A significant increasing trend can be seen from the graph above, which indicates the increase in the cereals production in Egypt throughout the period. Similar trend can be observated in Vietnam. However, the cereals production had an opposite trend in Somalia.
 
 ### Interactive plot of cereals production
 
-Interactive plot can be used to show effectively the trend of cereals production of 76 countries during the 25-year period. The interactive plot can be checked in R.
+Interactive plot can be used to show effectively the trend of cereals production in 76 countries during the 25-year period. The interactive plot can be checked in R.
 
 ```{r}
 #Interactive plot
-
+#library(ggvis)
 #IFS_tidy %>%
 #  ggvis(~Year,~cereals_production) %>%
 #  filter(Country %in% eval(input_select(levels(IFS_tidy$Country),label='Country'))) %>% layer_lines()
@@ -160,19 +132,20 @@ Interactive plot can be used to show effectively the trend of cereals production
 ## Food availability per million citizens
 
 ```{r, fig.width=10,fig.height=6,fig.align='center'}
-aveg_ava <- IFS_tidy %>% mutate(aveg_ava=cereals_ava/population) %>% na.omit()
+aveg_ava <- IFS_tidy %>% mutate(aveg_ava=cereals_ava/population) %>% na.omit() 
 
 ggplot(aveg_ava) + 
   aes(x=Country,y=Year, fill=aveg_ava) + 
   geom_raster()  +
-  theme(axis.text.x=element_text(angle=90, hjust=1)) + ggtitle("Average Food availability")
+  theme(axis.text.x=element_text(angle=90, hjust=1)) + 
+  ggtitle("Average Food availability") 
 ```
 
-Missing data will not be filled with color in the graph above. The darker blue rectangular pattern indicates a smaller average food availability in a specific year in a specific country. Egypt has much lighter rectangulat pattern than other countries, which indicates the average food availability in Egypt was larger than other countries.
+Raster can be used to describe three variables at the same time. However, Mmssing data will not be filled with color in the graph above. The darker blue rectangular pattern indicates a smaller average food availability in a specific year in a specific country. Egypt has much lighter rectangulat pattern than other countries, which indicates the average food availability in Egypt was larger than other countries.
 
 ## Cereals Harvested 
 
-We use map plot to show the area harvested of cereals in each country.
+We used map plot to show the area harvested of cereals in each country.
 
 ```{r, fig.width=12,fig.height=8,fig.align='center'}
 library(rworldmap)
@@ -219,7 +192,7 @@ ggplot(produc_3) +
 
 ```
 
-Cereals producation per 1000 Ha can be regarded as an indictor of the cereals productivity in the countries. In the plot above, we can noticed that the cereals productivity in Egypt was significantly larger than other countries. Basically in these countries, the productivity in the recent years was higher than that in the 20th century. This increasing trend can also be verified by the graph of the average productivity throughout the period.
+Cereals producation per 1000 Ha can be regarded as an indicator of the cereals productivity in the countries. In the plot above, we can noticed that the cereals productivity in Egypt was significantly larger than other countries. Basically in these countries, the productivity in the recent years was higher than that in the 20th century. This increasing trend can also be verified by the graph of the average productivity throughout the period.
 
 ```{r, fig.width=10,fig.height=6,fig.align='center'}
 #mean of production/availability each year 
@@ -288,4 +261,19 @@ ggplot(aid_ava_ratio_mean) +
 ```
 
 
+# Summary
+
+### Tidy Data
+
+We built a tidy data frame based on following rules: 
+
+1. Each variable forms a column.
+2. Each observation forms a row.
+3. Each type of observational unit forms a table.
+
+Each raw in the data frame is the ovbservation of a specific country in a specific year.
+
+### Summary statistics and visualization
+
+We used line charts to illustrate the changes of variables throughout the period. Maps help to show the geographic information. Multiple variables can be showed in a chart with color indicating one variable.
 
